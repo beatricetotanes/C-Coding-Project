@@ -14,23 +14,26 @@
 
 using namespace std;
 
+// Student Class
 class student {
-    string snum;
-    string lastName;
-    string gName;
-    string mName;
+    string snum; //Student Number
+    string lastName; //Last Name
+    string gName; //Given Name
+    string mName; //Middle Name
     string course;
-    string bday;
-    float gwa;
-    int age;
+    string bday; //Birthday
+    float gwa; //GWA
+    int age; //Age
     string seniority;
-    string cStand;
+    string cStand; //Current Stanfding
     
+    //Private function declarations
     private:
         int findAge(int, int, int, int, int, int);
     
+    //Public function declarations
     public:
-        student *next;
+        student *next; //For connecting nodes
         student();
         student(string, string, string, string, string, string, float);
         void setStudentNum(string);
@@ -57,22 +60,25 @@ class student {
         void printData(); //Prints Data
 };
 
+// Linked List Class
 class linkedList {
-    student *head;
-    student *tail;
+    student *head; //Points to the head of the list
     int elements; //counts no. of elements
     
+    //Private function declarations
     void defaultSort(); //sort by student number
     void sortLastName();
     void sortGwa();
     void swap(student**, student**);
     
+    //Public function declarations
     public:
         linkedList();
         int getElementCount(int);
         void addStudent();
         void insert();
-        void removeStudent();
+        void removeStudent(string);
+        void update();
         void print();
         void sortMenu();
         ~linkedList();
@@ -83,6 +89,7 @@ int main() {
     linkedList list;
     int c = 0;
     int choice;
+    string snum;
     
     while (c == 0) {
         //Menu
@@ -105,9 +112,13 @@ int main() {
                 c = 0;
                 break;
             case 2:
+                cout << "\nEnter student number: ";
+                cin >> snum;
+                list.removeStudent(snum);
                 c = 0;
                 break;
             case 3:
+                list.update();
                 c = 0;
                 break;
             case 4:
@@ -120,7 +131,6 @@ int main() {
                 c = 0;
                 break;
             default:
-                list.~linkedList();
                 c = 0;
                 cout << "Invalid input.\n"; //Prints message if user inputs a value other than 0 to 4
         }
@@ -134,6 +144,7 @@ int main() {
                                 FOR STUDENT CLASS <-------------------------------->
                                 */
 //Constructor---------------
+//If user doesn't supply input upon instantiation, this constructor will be used.
 student:: student(){
     snum = "0";
     lastName = "0";
@@ -148,6 +159,7 @@ student:: student(){
     next = NULL;
 }
 
+//If user supplies input upon instantiation, this constructor will be used.
 student:: student(string snum, string lname, string gname, string mname, string course, string bday, float gwa){
     setStudentNum(snum);
     setLastName(lname);
@@ -162,6 +174,8 @@ student:: student(string snum, string lname, string gname, string mname, string 
     next = NULL;
 }
 
+// Function Definitions
+// 1. Updates Data of Student
 void student:: updateData(string snum, string lname, string gname, string mname, string course, string bday, float gwa){
     setStudentNum(snum);
     setLastName(lname);
@@ -175,6 +189,7 @@ void student:: updateData(string snum, string lname, string gname, string mname,
     setCurrStand(gwa);
 }
 
+// 2. Prints Student Data
 void student:: printData(){
     cout << "Student Number: " << getStudentNum() << endl;
     cout << "Name: " << getLastName() << ", " << getGivenName() << " " << getMiddleName() << endl;
@@ -187,6 +202,7 @@ void student:: printData(){
 }
 
 //Mutators----------------
+// Assigns the data to the variables
 void student:: setStudentNum(string snum){
     this->snum = snum;
 }
@@ -215,6 +231,7 @@ void student:: setGwa(float gwa){
     this->gwa = gwa;
 }
 
+// For age, it will be calculated using the birthday of the student.
 void student:: setAge(string bday){
     string tmpBYear;
     string tmpBMonth;
@@ -230,6 +247,7 @@ void student:: setAge(string bday){
     
     tmpBirthday.erase(remove(tmpBirthday.begin(), tmpBirthday.end(), '-'), tmpBirthday.end()); //Removes dashes
     
+    // Computes the current date
     time_t now = time(0);
     tm *locTime = localtime(&now);
     
@@ -237,29 +255,35 @@ void student:: setAge(string bday){
     pMonth = 1 + locTime->tm_mon;
     pDay = locTime->tm_mday;
     
+    // Gets the year from the student's birthday
     for (i = 0; i < 4; i++) {
         tmpBYear[i] = tmpBirthday[i];
     }
     
     j = 0;
+    // Gets the month from the student's birthday
     for (i = 4; i < 6; i++) {
         tmpBMonth[j] = tmpBirthday[i];
         j++;
     }
     
     k = 0;
+    // Gets the day from the student's birthday
     for (i = 6; i < 8; i++) {
         tmpBDayNum[k] = tmpBirthday[i];
         k++;
     }
     
+    // Converts year, month, and day to integers
     bYear = stoi(tmpBYear);
     bMonth = stoi(tmpBMonth);
     bDate = stoi(tmpBDayNum);
     
+    // Finds age through the findAge function
     age = findAge(pDay, pMonth, pYear, bDate, bMonth, bYear);
 }
 
+// Function to compute the age based on the birthday
 int student:: findAge(int currDay, int currMonth, int currYr, int bDate, int bMonth, int bYear){
     int month[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
     
@@ -278,16 +302,21 @@ int student:: findAge(int currDay, int currMonth, int currYr, int bDate, int bMo
     return calcYear;
 }
 
+// For seniority, it will be computed based on the student number.
 void student:: setSeniority(string sNum){
-    char tmpNum[4];
+    string tmpNum;
     int yr;
     int i;
     
+    // Gets the first four digits of the student number which is equivalent to the year that the student entered university
     for (i = 0; i < 4; i++) {
         tmpNum[i] = sNum[i];
     }
     
-    yr = atoi(tmpNum);
+    // Converts string to integer
+    yr = stoi(tmpNum);
+    
+    // If-else statements to determine the seniority of the student.
     if (yr >= 2014 && yr <= 2017) {
         seniority = "4th Year";
     }else if (yr == 2018) seniority = "3rd Year";
@@ -296,6 +325,7 @@ void student:: setSeniority(string sNum){
     else seniority = "Invalid";
 }
 
+// For current standing, it is based on the GWA.
 void student:: setCurrStand(float gwa){
     if (gwa > 3.0) {
         cStand = "Fail";
@@ -309,6 +339,7 @@ void student:: setCurrStand(float gwa){
 }
 
 //Accessors--------------
+// Functions to access the private attributes
 string student:: getStudentNum(){
     return snum;
 }
@@ -355,12 +386,11 @@ string student::getCurrStand(){
 
 //Constructor
 linkedList:: linkedList(){
-    head = NULL;
-    tail = NULL;
+    head = NULL; // Ensures head is pointing to NULL when object is first created
     elements = 0;
 }
 
-//Destructor
+//Destructor to deallocate memory
 linkedList:: ~linkedList(){
     student *tmp = head;
     student *next;
@@ -370,17 +400,15 @@ linkedList:: ~linkedList(){
         delete tmp;
         tmp = next;
     }
-    cout << "\nDeleted\n";
 }
 
-//Mutator
-
-
-//Accessor
+// Function Definitions
+// 1. Gets the number of elements in the list
 int linkedList:: getElementCount(int count){
     return count;
 }
 
+// 2. Function to insert a new student
 void linkedList:: insert(){
     student *tmp = new student();
     string snum;
@@ -407,21 +435,22 @@ void linkedList:: insert(){
     cout << "GWA: ";
     cin >> gwa;
     
-    tmp->updateData(snum, lastName, gName, mName, course, bday, gwa);
+    tmp->updateData(snum, lastName, gName, mName, course, bday, gwa); //Updates data
     
+    // Inserts the node in the linked list
     if (head == NULL) {
-        head = tail = tmp;
+        head = tmp;
     }else{
         tmp->next = head;
         head = tmp;
         
-        defaultSort();
+        defaultSort(); // Linked list is defaultly sorted by student number
     }
     elements++;
     cout << "Student Added! \n";
 }
 
-//Sort by student number
+// 3. Function to Sort by Student Number
 void linkedList:: defaultSort(){
     string minStringNum;
     int minIntNum;
@@ -465,7 +494,7 @@ void linkedList:: defaultSort(){
     
 }
 
-//Sort by Last Name
+// 4. Function to Sort by Last Name
 void linkedList:: sortLastName(){
     student *tmp = head; //Traveller from node to node
     student *r;
@@ -501,6 +530,7 @@ void linkedList:: sortLastName(){
     }
 }
 
+// 5. Function to Sort by GWA
 void linkedList:: sortGwa(){
     float minGwa;
     float rGwa;
@@ -535,6 +565,7 @@ void linkedList:: sortGwa(){
 
 }
 
+// 6. Function to Swap Student Information if it is Unsorted
 void linkedList:: swap(student **tmp, student **min){
     string tmpSnum;
     string tmpLName;
@@ -589,7 +620,7 @@ void linkedList:: swap(student **tmp, student **min){
     (*min)->setCurrStand((*min)->getGwa());
 }
 
-//Sort Menu
+// 7. Function for the Menu for Sorting
 void linkedList:: sortMenu(){
     int choice;
     
@@ -610,11 +641,13 @@ void linkedList:: sortMenu(){
             sortLastName();
             cout << "\n[Temporarily Sorted by Last Name]\n";
             print();
+            defaultSort(); // Will sort again by student number to restore to default sort
             break;
         case 3:
             sortGwa();
             cout << "\n[Temporarily Sorted by GWA]\n";
             print();
+            defaultSort(); // Will sort again by student number to restore to default sort
             break;
         default:
             cout << "Invalid input.\n"; //Prints message if user inputs a value other than 0 to 4
@@ -622,10 +655,159 @@ void linkedList:: sortMenu(){
     }
 }
 
+// 8. Function to remove/delete a student from the list based on student number
+void linkedList:: removeStudent(string snum){
+    student *current = head;
+    int compare;
+    student *before;
+    student *tmp;
+    bool exists = false;
+    
+    //If list is not empty, proceed to finding the student that will be deleted via student number.
+    if (current != NULL) {
+        compare = snum.compare(current->getStudentNum()); //If compare == 0, then the student number matches the student number to be deleted
+        if (compare == 0) {
+            head = head->next;
+            delete current;
+            exists = true;
+            elements--; //Decrements no. of elements in the list
+        }
+        
+        //If the node at the beginning isn't the one to be deleted, then proceed to finding the the matching student number in the succeeding nodes.
+        if (exists == false) {
+            before = current;
+            current = current->next;
+            while (current != NULL) {
+                compare = snum.compare(current->getStudentNum());
+                if (compare == 0) {
+                    tmp = current;
+                    //Connects the node before the node to be deleted to the next node after the node to be deleted
+                    before->next = tmp->next;
+                    delete tmp;
+                    elements--; //Decrements no. of elements in the list
+                    exists = true;
+                    break;
+                }
+                before = current;
+                current = current->next;
+            }
+        }
+        
+        //If the student number exists in the database, then it will print the message that the student has been removed. Else, the student does not exist.
+        if(exists == true){
+            cout << "\nStudent w/ student number [" << snum << "] has been removed from the database.\n";
+        }else cout << "\nStudent does not exist.\n";
+    }else cout << "\nList is currently empty.\n";
+}
+
+// 9. Function to update the attribute(s) of the student in the linked list
+void linkedList:: update(){
+    int compare;
+    int c = 0;
+    int choice;
+    string text;
+    float num;
+    student *tmp = head;
+    string snum;
+    bool exists = false;
+    
+    // If list is not empty, then it will proceed to asking for the student number.
+    if (head != NULL) {
+        cout << "\nEnter student number: ";
+        cin >> snum;
+        
+        while (tmp != NULL) {
+            compare = snum.compare(tmp->getStudentNum()); // Checks if the student exists in the database
+            
+            // If compare == 0, it means that the student exists and proceeds to asking the user what attribute to edit.
+            if (compare == 0) {
+                exists = true;
+                while (c == 0) {
+                    //Menu
+                    cout << "\nStudent Number: " << tmp->getStudentNum() << endl;
+                    cout << "[1] First Name: " << tmp->getGivenName() << endl;
+                    cout << "[2] Middle Name: " << tmp->getMiddleName() << endl;
+                    cout << "[3] Last Name: " << tmp->getLastName() << endl;
+                    cout << "[4] Birthday: " << tmp->getBday() << endl;
+                    cout << "[5] Course: " << tmp->getCourse() << endl;
+                    cout << "[6] GWA: " << tmp->getGwa() << endl;
+                    printf("[0] Back to Main Menu\n");
+                    printf("Enter data to edit [1-6] or 0 to go back to Main Menu: ");
+                    cin >> choice;
+                    
+                    switch (choice) {
+                        case 0:
+                            c = 1;
+                            break;
+                        case 1:
+                            cout << "Enter first name: ";
+                            cin.ignore();
+                            getline(cin, text);
+                            tmp->setGivenName(text);
+                            c = 0;
+                            break;
+                        case 2:
+                            cout << "Enter middle name: ";
+                            cin.ignore();
+                            getline(cin, text);
+                            tmp->setMiddleName(text);
+                            c = 0;
+                            break;
+                        case 3:
+                            cout << "Enter last name: ";
+                            cin.ignore();
+                            getline(cin, text);
+                            tmp->setLastName(text);
+                            c = 0;
+                            break;
+                        case 4:
+                            cout << "Enter birthday (Format: YYYY-MM-DD): ";
+                            cin.ignore();
+                            getline(cin, text);
+                            tmp->setBday(text);
+                            tmp->setAge(text);
+                            c = 0;
+                            break;
+                        case 5:
+                            cout << "Enter course: ";
+                            cin.ignore();
+                            getline(cin, text);
+                            tmp->setCourse(text);
+                            c = 0;
+                            break;
+                        case 6:
+                            cout << "Enter GWA: ";
+                            cin >> num;
+                            tmp->setGwa(num);
+                            tmp->setCurrStand(num);
+                            c = 0;
+                            break;
+                        default:
+                            c = 0;
+                            cout << "Invalid input.\n"; //Prints message if user inputs a value other than 0 to 4
+                    }
+                }
+               
+                break;
+            }
+            tmp = tmp->next;
+        }
+        
+        if (exists == false) {
+            cout << "\nStudent does not exist.\n";
+        }
+        
+    }else cout << "\nList is empty.";
+}
+
 //Utility Method for Printing
 void linkedList:: print(){
     student *tmp = head;
     cout << endl << "The no. of elements on the list are: [" << elements << "].\n" << endl;
+    
+    if (elements == 0) {
+        cout << "\nList is empty.\n";
+    }
     
     while (tmp != NULL) {
         tmp->printData();
