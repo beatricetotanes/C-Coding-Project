@@ -11,6 +11,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
@@ -93,7 +94,7 @@ int main() {
     
     while (c == 0) {
         //Menu
-        cout << "\n\nStudent Information System\n";
+        cout << "\nStudent Information System\n";
         cout << "[1] Add Student\n";
         cout << "[2] Delete Student\n";
         cout << "[3] Update Student Information\n";
@@ -236,13 +237,13 @@ void student:: setAge(string bday){
     string tmpBYear;
     string tmpBMonth;
     string tmpBDayNum;
+    stringstream tmp;
     int bYear;
     int bMonth;
     int bDate;
-    int pYear;
-    int pMonth;
-    int pDay;
-    int i, j, k;
+    int pYear; //present
+    int pMonth; //present
+    int pDay; //present
     string tmpBirthday = bday;
     
     tmpBirthday.erase(remove(tmpBirthday.begin(), tmpBirthday.end(), '-'), tmpBirthday.end()); //Removes dashes
@@ -255,29 +256,15 @@ void student:: setAge(string bday){
     pMonth = 1 + locTime->tm_mon;
     pDay = locTime->tm_mday;
     
-    // Gets the year from the student's birthday
-    for (i = 0; i < 4; i++) {
-        tmpBYear[i] = tmpBirthday[i];
-    }
+    // Gets year, month, and day
+    tmpBYear = tmpBirthday.substr(0,4);
+    tmpBMonth = tmpBirthday.substr(4,2);
+    tmpBDayNum = tmpBirthday.substr(6,2);
     
-    j = 0;
-    // Gets the month from the student's birthday
-    for (i = 4; i < 6; i++) {
-        tmpBMonth[j] = tmpBirthday[i];
-        j++;
-    }
-    
-    k = 0;
-    // Gets the day from the student's birthday
-    for (i = 6; i < 8; i++) {
-        tmpBDayNum[k] = tmpBirthday[i];
-        k++;
-    }
-    
-    // Converts year, month, and day to integers
-    bYear = stoi(tmpBYear);
-    bMonth = stoi(tmpBMonth);
-    bDate = stoi(tmpBDayNum);
+    // Converts strings to numbers
+    istringstream(tmpBYear) >> bYear;
+    istringstream(tmpBMonth) >> bMonth;
+    istringstream(tmpBDayNum) >> bDate;
     
     // Finds age through the findAge function
     age = findAge(pDay, pMonth, pYear, bDate, bMonth, bYear);
@@ -305,16 +292,14 @@ int student:: findAge(int currDay, int currMonth, int currYr, int bDate, int bMo
 // For seniority, it will be computed based on the student number.
 void student:: setSeniority(string sNum){
     string tmpNum;
+    string tmpSNum = sNum;
     int yr;
-    int i;
     
     // Gets the first four digits of the student number which is equivalent to the year that the student entered university
-    for (i = 0; i < 4; i++) {
-        tmpNum[i] = sNum[i];
-    }
+    tmpNum = tmpSNum.substr(0,4);
     
     // Converts string to integer
-    yr = stoi(tmpNum);
+    istringstream(tmpNum) >> yr;
     
     // If-else statements to determine the seniority of the student.
     if (yr >= 2014 && yr <= 2017) {
@@ -471,12 +456,12 @@ void linkedList:: defaultSort(){
             //Converts the student number in the minimum value from string to integer
             minStringNum = min->getStudentNum();
             minStringNum.erase(remove(minStringNum.begin(), minStringNum.end(), '-'), minStringNum.end());
-            minIntNum = stoi(minStringNum);
+            istringstream(minStringNum) >> minIntNum;
             
             //Converts the student number in 'r' from string to integer
             nextStringNum = r->getStudentNum();
             nextStringNum.erase(remove(nextStringNum.begin(), nextStringNum.end(), '-'), nextStringNum.end());
-            nextIntNum = stoi(nextStringNum);
+            istringstream(nextStringNum) >> nextIntNum;
             
             //If the student number in 'r' is greater than the student number in 'min', 'r' will become 'min' since it is currently the minimum/smallest value.
             if (minIntNum > nextIntNum) {
