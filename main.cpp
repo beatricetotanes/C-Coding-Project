@@ -502,7 +502,7 @@ void linkedList:: sortLastName(){
             nextString = r->getLastName(); //Gets the last name of 'r' node
             
             compare = minString.compare(nextString);
-            //If minString is smaller than nextString, then 'min' will be equal to 'r' since the last name in 'r' comes first currently than the last name in 'min'
+            //If minString is greater than nextString, then 'min' will be equal to 'r' since the last name in 'r' comes first than the last name in 'min'
             if (compare > 0) {
                 min = r;
             }
@@ -510,7 +510,7 @@ void linkedList:: sortLastName(){
             r = r->next;
         }
         
-        //Swaps the data between the node w/ the current minimum/smallest student number to the node 'tmp'
+        //Swaps the data between the node w/ the current minimum/smallest last name to the node 'tmp'
         swap(&tmp, &min);
         tmp = tmp->next;
     }
@@ -528,21 +528,22 @@ void linkedList:: sortLastName(){
             nextString = r->getLastName(); //Gets the last name of 'r' node
             
             compare = minString.compare(nextString);
-            //If minString is smaller than nextString, then 'min' will be equal to 'r' since the last name in 'r' comes first currently than the last name in 'min'
+            //If compare == 0, then the last names are the same and the tie must be broken.
             if (compare == 0) {
                 minString = min->getGivenName(); //Gets the first name of the current minimum node
                 nextString = r->getGivenName(); //Gets the first name of 'r' node
                 
+                // Gets the smallest first name among the list who has the same last names
                 compare = minString.compare(nextString);
                 if (compare > 0) {
                     min = r;
                 }
             }
-            //Proceeds to the next node to compare and find the minimum value/last name
+            //Proceeds to the next node to compare and find the minimum value/first name if the tie needs to be broken
             r = r->next;
         }
         
-        //Swaps the data between the node w/ the current minimum/smallest student number to the node 'tmp'
+        //Swaps the data between the node w/ the current minimum/smallest first name to the node 'tmp'
         swap(&tmp, &min);
         tmp = tmp->next;
     }
@@ -570,7 +571,7 @@ void linkedList:: sortGwa(){
             minGwa = min->getGwa(); //Gets the gwa from the 'min' node
             rGwa = r->getGwa(); //Gets the gwa from the current 'r' node
             
-            //If the GWA in 'r' is greater than the student number in 'min', 'r' will become 'min' since it is currently the minimum/smallest value.
+            //If the GWA in 'r' is greater than the GWA in 'min', 'r' will become 'min' since it is currently the minimum/smallest value.
             if (minGwa > rGwa) {
                 min = r;
             }
@@ -579,12 +580,12 @@ void linkedList:: sortGwa(){
             r = r->next;
         }
         
-        //Swaps the data between the node w/ the current minimum/smallest student number to the node 'tmp'
+        //Swaps the data between the node w/ the current minimum/smallest gwa to the node 'tmp'
         swap(&tmp, &min);
         tmp = tmp->next;
     }
     
-    // After sorting by GWA, if there are same GWA, sort by last name to break the tie.
+    // After sorting by GWA, if there are same GWAs, sort by last name to break the tie.
     tmp = head;
     
     while (tmp != NULL) {
@@ -596,30 +597,32 @@ void linkedList:: sortGwa(){
             minGwa = min->getGwa(); //Gets the gwa from the 'min' node
             rGwa = r->getGwa(); //Gets the gwa from the current 'r' node
             
-            //If the GWA in 'r' is greater than the student number in 'min', 'r' will become 'min' since it is currently the minimum/smallest value.
+            //If the GWAs are the same, then we need to break the tie via last name.
             if (minGwa == rGwa) {
                 minString = min->getLastName(); //Gets the last name of the current minimum node
                 nextString = r->getLastName(); //Gets the last name of 'r' node
                 
                 compare = minString.compare(nextString);
+                // If compare > 0, then min will be equal to r because r is the current smallest last name in terms of ASCII.
                 if (compare > 0) {
                     min = r;
-                }else if (compare == 0) {
+                }else if (compare == 0) { // If the last names are the same, then the tie must be broken via first names.
                     minString = min->getGivenName(); //Gets the first name of the current minimum node
                     nextString = r->getGivenName(); //Gets the first name of 'r' node
                     
                     compare = minString.compare(nextString);
+                    // If compare > 0, then min will be equal to r because r is the current smallest first name in terms of ASCII.
                     if (compare > 0) {
                         min = r;
                     }
                 }
             }
             
-            //Proceeds to the next node to compare and find the minimum value/last name
+            //Proceeds to the next node to compare and find the minimum value/last name if the tie needs to be broken
             r = r->next;
         }
         
-        //Swaps the data between the node w/ the current minimum/smallest student number to the node 'tmp'
+        //Swaps the data between the node w/ the current minimum/smallest first name/last name to the node 'tmp'
         swap(&tmp, &min);
         tmp = tmp->next;
     }
