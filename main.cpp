@@ -487,6 +487,8 @@ void linkedList:: sortLastName(){
     int compare;
     string minString;
     string nextString;
+    string minFirst;
+    string nextFirst;
     
     //Sorting through Selection Sort
     //Swaps data between nodes if the last names are not in ascending order
@@ -504,7 +506,38 @@ void linkedList:: sortLastName(){
             if (compare > 0) {
                 min = r;
             }
+            //Proceeds to the next node to compare and find the minimum value/last name
+            r = r->next;
+        }
+        
+        //Swaps the data between the node w/ the current minimum/smallest student number to the node 'tmp'
+        swap(&tmp, &min);
+        tmp = tmp->next;
+    }
+    
+    tmp = head;
+    
+    // After sorting by last name, if there are same last names, sort by first name to break the tie.
+    while (tmp != NULL) {
+        min = tmp; //Sets the minimum value/last name
+        r = tmp->next; //Gets the next node
+        
+        //This loop finds the minimum value from all of the nodes
+        while (r != NULL) {
+            minString = min->getLastName(); //Gets the last name of the current minimum node
+            nextString = r->getLastName(); //Gets the last name of 'r' node
             
+            compare = minString.compare(nextString);
+            //If minString is smaller than nextString, then 'min' will be equal to 'r' since the last name in 'r' comes first currently than the last name in 'min'
+            if (compare == 0) {
+                minString = min->getGivenName(); //Gets the last name of the current minimum node
+                nextString = r->getGivenName(); //Gets the last name of 'r' node
+                
+                compare = minString.compare(nextString);
+                if (compare > 0) {
+                    min = r;
+                }
+            }
             //Proceeds to the next node to compare and find the minimum value/last name
             r = r->next;
         }
@@ -522,6 +555,11 @@ void linkedList:: sortGwa(){
     student *tmp = head; //Traveller from node to node
     student *min;
     student *r;
+    string minLName;
+    string nextLName;
+    string minFName;
+    string nextFName;
+    int compareLName;
     
     //Sorting through Selection Sort
     //Swaps data between nodes if the student numbers are not in ascending order
@@ -537,6 +575,18 @@ void linkedList:: sortGwa(){
             //If the GWA in 'r' is greater than the student number in 'min', 'r' will become 'min' since it is currently the minimum/smallest value.
             if (minGwa > rGwa) {
                 min = r;
+            }else if (minGwa == rGwa){
+                //Breaking the tie
+                minLName = min->getLastName();
+                nextLName = r->getLastName();
+                
+                compareLName = minLName.compare(nextLName);
+                if (compareLName > 0) {
+                    swap(&r, &min);
+                }else if (compareLName == 0){
+                    minFName = min->getGivenName();
+                    nextFName = r->getGivenName();
+                }
             }
             
             //Proceeds to the next node to compare and find the minimum value
